@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
@@ -9,9 +10,9 @@ const corsOptions = {
     credential: true
 };
 
-const dbuser = 'dbUser1';
-const dbpassword = 'database1';
-const database = 'lambdanotes_db';
+// const dbuser = 'dbUser1';
+// const dbpassword = 'database1';
+// const database = 'lambdanotes_db';
 
 const port = process.env.PORT || 5000;
 
@@ -32,7 +33,7 @@ server.get('/', (req,res) => {
 //database connection
 mongoose.Promise = global.Promise;
 
-mongoose.connect(`mongodb://${dbuser}:${dbpassword}@ds015325.mlab.com:15325/${database}`, {}, error => {
+mongoose.connect(`mongodb://${process.env.dbuser}:${process.env.dbpassword}@ds015325.mlab.com:15325/${process.env.database}`, {}, error => {
     if(error) console.log(error);
     console.log(`\n===== Connect ${database} to mLab =====\n`)
 })
