@@ -6,36 +6,34 @@ const helmet = require('helmet');
 
 const server = express();
 const corsOptions = {
-    origin: 'http://localhost:3000', //need to change to netify later
+    origin: 'http://localhost:3000', //might need to change to netify later
     credential: true
 };
 
-// const dbuser = 'dbUser1';
-// const dbpassword = 'database1';
-// const database = 'lambdanotes_db';
-
 const port = process.env.PORT || 5000;
-
-//need notes and users controllers here 
 
 server.use(express.json());
 server.use(helmet());
 server.use(cors({corsOptions}));
 
+
+const notesRoute = require('./notes/noteRoute');
+const usersRoute = require('./users/userRoute')
+
+server.use('/api/notes', notesRoute);
+server.use('/api/users', usersRoute);
+
 server.get('/', (req,res) => {
     res.status(200).json({ api: 'running'})
 })
-
-//server.use('api/notes', notesController);
-//also for user controller
 
 
 //database connection
 mongoose.Promise = global.Promise;
 
-mongoose.connect(`mongodb://${process.env.dbuser}:${process.env.dbpassword}@ds015325.mlab.com:15325/${process.env.database}`, {}, error => {
+mongoose.connect(`${process.env.mongo}`, {}, error => {
     if(error) console.log(error);
-    console.log(`\n===== Connect ${database} to mLab =====\n`)
+    console.log(`\n===== Connected lambdanotes_db to database =====\n`)
 })
     
 
