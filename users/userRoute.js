@@ -10,7 +10,7 @@ function generateToKen(user) {
     const options = {
         expiresIn: '1h',
     }
-    const payload = { name: username };
+    const payload = { name: user.username };
     return jwt.sign(payload, envSecret, options)
 }
 
@@ -53,7 +53,7 @@ router
 router
     .route('/register')
     .post((req, res) => {
-        const { username, password } = req.body;
+        const { username, password } = req.body; 
 
         if(!username || !password) {
             res.status(400).json({ message: 'Please provide name and password.'})
@@ -69,7 +69,7 @@ router
                     User
                         .create({ username, password })
                         .then(newUser => {
-                            res.status(201).json({ newUser })
+                            res.status(201).json(newUser)
                         })
                         .catch(error => {
                             res.status(500).json(error)

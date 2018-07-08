@@ -5,10 +5,29 @@ const Notes = require('./noteModel');
 const jwt = require('jsonwebtoken');
 const envSecret = process.env.secret;
 
+//middleware to block the route before get all notes
+function restricted(req, res, next) {
+    const token = req.headers.authorization;
+
+    if(token) {
+        jwt.verify(token, envSecret, (error, decodedToken) => {
+            req.jwtPayload = decodedToken;
+            console.log('decodedToken', decodedToken);
+
+            if(error) {
+                return res.status(401).json({ message: 'Please log in.' })
+            }
+
+            next();
+        })
+    } else {
+        res.status(401).json({ message: 'Please log in.' })
+    }
+}
 
 router
     .route('/')
-    .get((req, res) => {
+    .get(restricted, (req, res) => {
         Notes
             .find()
             .then(notes => {
