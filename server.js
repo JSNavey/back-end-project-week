@@ -20,7 +20,27 @@ server.use(cors({corsOptions}));
 const notesRoute = require('./notes/noteRoute');
 const usersRoute = require('./users/userRoute')
 
-server.use('/api/notes', notesRoute);
+//move from local middleware to global in order to restrict the route to get all notes.
+function restricted(req, res, next) {
+    const token = req.headers.authorization;
+
+    if(token) {
+        jwt.verify(token, envSecret, (error, decodedToken) => {
+            req.jwtPayload = decodedToken;
+            console.log('decodedToken', decodedToken);
+
+            if(error) {
+                return res.status(401).json({ message: 'Please log in.' })
+            }
+
+            next();
+        })
+    } else {
+        res.status(401).json({ message: 'Please log in.' })
+    }
+}
+
+server.use('/api/notes', restricted, notesRoute);
 server.use('/api/users', usersRoute);
 
 server.get('/', (req,res) => {
