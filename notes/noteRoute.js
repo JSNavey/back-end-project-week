@@ -2,13 +2,13 @@ const router = require('express').Router();
 const Notes = require('./noteModel');
 
 const jwt = require('jsonwebtoken');
-const secret = 'Secret makes a woman woman...';
+const envSecret = process.env.secret;
 
 function restricted(req, res, next) {
     const token = req.headers.authorization;
 
     if(token) {
-        jwt.verify(token, secret, (error, decodedToken) => {
+        jwt.verify(token, envSecret, (error, decodedToken) => {
             req.jwtPayload = decodedToken;
             console.log('decodedToken', decodedToken);
 
@@ -24,8 +24,8 @@ function restricted(req, res, next) {
 }
 
 router
-    .route('/', restricted)
-    .get((req, res) => {
+    .route('/')
+    .get(restricted, (req, res) => {
         Notes
             .find()
             .then(notes => {
